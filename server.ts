@@ -2,31 +2,56 @@
  * server.ts — Express REST API cho hệ thống thi QNU
  * Kết nối PostgreSQL qua pool, phục vụ frontend React/Vite.
  *
- * Dev:  npm run server   (Terminal riêng)
+ * Dev:  npm run server
  * Prod: node dist/server.js
  */
+
 import { config as dotenvConfig } from 'dotenv';
 import { fileURLToPath } from 'url';
 import { resolve, dirname } from 'path';
+
 const __filename0 = fileURLToPath(import.meta.url);
-const __dirname0  = dirname(__filename0);
-dotenvConfig({ path: resolve(__dirname0, '.env') });
+const __dirname0 = dirname(__filename0);
+
+dotenvConfig({
+  path: resolve(__dirname0, '.env'),
+});
 
 import express, { Request, Response } from 'express';
+import cors from 'cors';
 import path from 'path';
 import { pool, query, queryOne } from './src/lib/db.js';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname  = path.dirname(__filename);
+const __dirname = path.dirname(__filename);
 
-const app  = express();
+const app = express();
 const PORT = parseInt(process.env.PORT || '3001', 10);
+
+// =====================================================
+// CORS
+// =====================================================
+
+app.use(
+  cors({
+    origin: [
+      'https://hsvqnu-exam.vercel.app',
+      'http://localhost:5173',
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: false,
+  })
+);
+
+// =====================================================
+// Middleware
+// =====================================================
 
 app.use(express.json({ limit: '5mb' }));
 app.use(express.static(path.join(__dirname, 'dist')));
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
 function sendError(res: Response, err: unknown, status = 500) {
   const msg = err instanceof Error ? err.message : String(err);
   console.error('[API Error]', msg);
