@@ -413,9 +413,10 @@ app.get('*', (_req: Request, res: Response) => {
 // ─── Start ────────────────────────────────────────────────────────────────────
 
 app.listen(PORT, () => {
-  const dbInfo = process.env.DATABASE_URL
-    ? process.env.DATABASE_URL.replace(/:([^:@]+)@/, ':***@')
-    : `${process.env.DB_HOST || 'localhost'}:${process.env.DB_PORT || 5432}/${process.env.DB_NAME || 'hsvqnu'}`;
-  console.log(`✅ Server đang chạy tại http://localhost:${PORT}`);
-  console.log(`🗄️  Kết nối DB: ${dbInfo}`);
+  console.log(`✅ Server đang chạy tại port ${PORT}`);
+  console.log(
+    `🗄️ DATABASE_URL: ${
+      process.env.DATABASE_URL ? 'FOUND' : 'NOT FOUND'
+    }`
+  );
 });
